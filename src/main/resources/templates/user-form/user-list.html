@@ -11,7 +11,13 @@
         </tr>
         </thead>
         <tbody>
-       
+        <tr th:each="user: ${userList}">
+            <td th:text="${user.id}"></td>
+            <td th:text="${user.name}"></td>
+            <td th:text="${user.lastname}"></td>
+            <td th:text="${user.username}"></td>
+            <td th:text="${user.email}"></td>
+        </tr>
         </tbody>
     </table>
 </div>
