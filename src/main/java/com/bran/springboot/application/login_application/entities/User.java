@@ -3,7 +3,7 @@ package com.bran.springboot.application.login_application.entities;
 import java.io.Serializable;
 import java.util.Set;
 
-import org.hibernate.annotations.Fetch;
+import org.springframework.lang.NonNull;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,6 +16,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name="users")
@@ -23,18 +25,32 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
     @Column
+    @NotBlank
+    @Size(min=5, max=8, message="test error")
     private String name;
+    
     @Column
+    @NotBlank
     private String lastname;
+    
     @Column
+    @NotBlank
     private String email;
+    
     @Column
+    @NotBlank
     private String username;
+    
     @Column
+    @NotBlank
     private String password;
+    
     @Transient
+    @NotBlank
     private String confirmPassword;
+    
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
     joinColumns = @JoinColumn(name="user_id"),
