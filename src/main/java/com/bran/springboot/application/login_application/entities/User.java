@@ -20,45 +20,43 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name="users")
+@Table(name = "users")
 public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column
     @NotBlank
-    @Size(min=5, max=8, message="test error")
+    @Size(min = 5, max = 8, message = "test error")
     private String name;
-    
+
     @Column
     @NotBlank
     private String lastname;
-    
+
     @Column
     @NotBlank
     private String email;
-    
+
     @Column
     @NotBlank
     private String username;
-    
+
     @Column
     @NotBlank
     private String password;
-    
+
     @Transient
-    @NotBlank
     private String confirmPassword;
-    
+
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_roles",
-    joinColumns = @JoinColumn(name="user_id"),
-    inverseJoinColumns = @JoinColumn(name="role_id") 
-    )
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
+
     public User() {
     }
+
     public User(String name, String lastname, String email, String username, String password, String confirmPassword,
             Set<Role> roles) {
         this.name = name;
@@ -70,65 +68,77 @@ public class User implements Serializable {
         this.roles = roles;
     }
 
-
-
-
-
-    
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public String getLastname() {
         return lastname;
     }
+
     public void setLastname(String lastname) {
         this.lastname = lastname;
     }
+
     public String getEmail() {
         return email;
     }
+
     public void setEmail(String email) {
         this.email = email;
     }
+
     public String getUsername() {
         return username;
     }
+
     public void setUsername(String username) {
         this.username = username;
     }
+
     public String getPassword() {
         return password;
     }
+
     public void setPassword(String password) {
         this.password = password;
     }
+
     public String getConfirmPassword() {
         return confirmPassword;
     }
+
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
     }
+
     public Set<Role> getRoles() {
         return roles;
     }
+
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
+
     @Override
     public String toString() {
         return "User [id=" + id + ", name=" + name + ", lastname=" + lastname + ", email=" + email + ", username="
                 + username + ", password=" + password + ", confirmPassword=" + confirmPassword + ", roles=" + roles
                 + "]";
     }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -143,6 +153,7 @@ public class User implements Serializable {
         result = prime * result + ((roles == null) ? 0 : roles.hashCode());
         return result;
     }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -194,5 +205,5 @@ public class User implements Serializable {
             return false;
         return true;
     }
-     
+
 }
