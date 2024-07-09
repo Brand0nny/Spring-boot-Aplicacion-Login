@@ -66,4 +66,9 @@ public class UserServiceImpl implements UserService {
         to.setPassword(from.getPassword());
     }
 
+    @Override
+    public void deleteUser(Long id) throws Exception {
+        userRepository.delete(getUserById(id));
+    }
+
 }

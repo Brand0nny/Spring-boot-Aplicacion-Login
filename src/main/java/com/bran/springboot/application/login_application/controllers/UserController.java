@@ -109,6 +109,17 @@ public class UserController {
 
 
     }
+
+    @GetMapping("/deleteUser/{id}")
+    public String deleteUser(Model model, @PathVariable(name="id") Long id ){
+        try {
+            userService.deleteUser(id);
+        } catch (Exception e) {
+            model.addAttribute("listErrorMessage", e.getMessage());
+        }
+    return userForm(model);
+    }
+
     public void setUpModel(Model model) {
         model.addAttribute("userForm", new User());
         model.addAttribute("userList", userService.getAllUsers());
