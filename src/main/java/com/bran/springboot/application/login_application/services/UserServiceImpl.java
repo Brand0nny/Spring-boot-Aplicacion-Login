@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.bran.springboot.application.login_application.dto.ChangePasswordForm;
 import com.bran.springboot.application.login_application.entities.User;
 import com.bran.springboot.application.login_application.repositories.UserRepository;
 
@@ -69,6 +70,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) throws Exception {
         userRepository.delete(getUserById(id));
+    }
+
+    @Override
+    public User changePassword(ChangePasswordForm form) throws Exception {
+        User user = getUserById(form.getId());
+        if (!user.getPassword().equals(form.getCurrentPassword())) {
+            throw new Exception("Current password doesnt match");
+        }
+
+        if (user.getPassword().equals(form.getNewPassword())) {
+            throw new Exception("The new password must be different");
+        }
+
+        if (!form.getNewPassword().equals(form.getConfirmPassword())) {
+            throw new Exception("The password doesnt match");
+        }
+
+        user.setPassword(form.getNewPassword());
+        return userRepository.save(user);
+
     }
 
 }
