@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    @PreAuthorize("/hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public void deleteUser(Long id) throws Exception {
         userRepository.delete(getUserById(id));
     }
