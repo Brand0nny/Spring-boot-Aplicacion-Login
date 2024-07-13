@@ -20,6 +20,7 @@ import com.bran.springboot.application.login_application.entities.User;
 import com.bran.springboot.application.login_application.repositories.RoleRepository;
 import com.bran.springboot.application.login_application.services.UserService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -35,9 +36,16 @@ public class UserController {
         return "index";
     }
 
+
+
+
     @GetMapping("/userForm")
     public String userForm(Model model) {
-        setUpModel(model);
+         
+        model.addAttribute("userForm", new User());
+        model.addAttribute("userList", userService.getAllUsers());
+        model.addAttribute("roles", roleRepository.findAll());
+        model.addAttribute("listTab", "active");
         return "user-form/user-view";
 
     }
@@ -88,6 +96,7 @@ public class UserController {
             ModelMap model) {
         if (result.hasErrors()) {
             model.addAttribute("userForm", user);
+            System.out.println("========================"+user);
             model.addAttribute("formTab", "active");
             model.addAttribute("editMode", "true");
             model.addAttribute("passwordForm", new ChangePasswordForm(user.getId()));
@@ -132,6 +141,7 @@ public class UserController {
         } catch (Exception e) {
             model.addAttribute("listErrorMessage", e.getMessage());
         }
+        
         return userForm(model);
     }
 
@@ -159,10 +169,7 @@ public class UserController {
     }
 
     public void setUpModel(Model model) {
-        model.addAttribute("userForm", new User());
-        model.addAttribute("userList", userService.getAllUsers());
-        model.addAttribute("roles", roleRepository.findAll());
-        model.addAttribute("listTab", "active");
+      
     }
 
 }

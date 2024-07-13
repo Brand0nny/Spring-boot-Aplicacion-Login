@@ -3,6 +3,10 @@ package com.bran.springboot.application.login_application.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.bran.springboot.application.login_application.dto.ChangePasswordForm;
@@ -15,6 +19,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    BCryptPasswordEncoder bCryptPasswordEncoder;
     @Override
     public Iterable<User> getAllUsers() {
 
@@ -39,9 +45,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(User user) throws Exception {
         if (checkUsername(user) && checkPasswordMatch(user)) {
-            user = userRepository.save(user);
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         }
-        return user;
+        return userRepository.save(user);
     }
 
     @Override
@@ -64,10 +70,14 @@ public class UserServiceImpl implements UserService {
         to.setUsername(from.getUsername());
         to.setEmail(from.getEmail());
         to.setRoles(from.getRoles());
-        to.setPassword(from.getPassword());
+    
     }
 
+   
+
+
     @Override
+    @PreAuthorize("/hasAnyRole('ROLE_ADMIN')")
     public void deleteUser(Long id) throws Exception {
         userRepository.delete(getUserById(id));
     }
@@ -75,10 +85,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public User changePassword(ChangePasswordForm form) throws Exception {
         User user = getUserById(form.getId());
-        if (!user.getPassword().equals(form.getCurrentPassword())) {
-            throw new Exception("Current password doesnt match");
+
+        if(!isLoggedUserADMIN() &&  !user.getPassword().equals(form.getCurrentPassword())){
+
+            throw new Exception("Current password invalid");
         }
 
+     
         if (user.getPassword().equals(form.getNewPassword())) {
             throw new Exception("The new password must be different");
         }
@@ -86,10 +99,28 @@ public class UserServiceImpl implements UserService {
         if (!form.getNewPassword().equals(form.getConfirmPassword())) {
             throw new Exception("The password doesnt match");
         }
-
-        user.setPassword(form.getNewPassword());
+        
+        user.setPassword(bCryptPasswordEncoder.encode(form.getNewPassword()));
         return userRepository.save(user);
 
+    }
+
+    public boolean isLoggedUserADMIN() {
+        return loggedUserHasRole("ROLE_ADMIN");
+    }
+
+    public boolean loggedUserHasRole(String role) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserDetails loggedUser = null;
+        Object roles = null;
+        if (principal instanceof UserDetails) {
+            loggedUser = (UserDetails) principal;
+
+            roles = loggedUser.getAuthorities().stream()
+                    .filter(x -> role.equals(x.getAuthority()))
+                    .findFirst().orElse(null); // loggedUser = null;
+        }
+        return roles != null ? true : false;
     }
 
 }
