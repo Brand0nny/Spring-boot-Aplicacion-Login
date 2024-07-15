@@ -3,7 +3,6 @@ package com.bran.springboot.application.login_application.entities;
 import java.io.Serializable;
 import java.util.Set;
 
-import org.springframework.lang.NonNull;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

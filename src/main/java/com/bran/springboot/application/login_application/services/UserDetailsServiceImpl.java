@@ -27,7 +27,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     com.bran.springboot.application.login_application.entities.User appUser = userRepository.findByUsername(username).orElseThrow(()-> new UsernameNotFoundException("Exception"));
     
-    Set grandList = new HashSet();
+    Set<GrantedAuthority> grandList = new HashSet<GrantedAuthority>();
 
     for(Role roles: appUser.getRoles()){
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(roles.getDescription());

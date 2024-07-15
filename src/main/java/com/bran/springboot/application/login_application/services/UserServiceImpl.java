@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.bran.springboot.application.login_application.dto.ChangePasswordForm;
 import com.bran.springboot.application.login_application.entities.User;
+import com.bran.springboot.application.login_application.exception.IdorUsernameNotFound;
 import com.bran.springboot.application.login_application.repositories.UserRepository;
 
 @Service
@@ -30,6 +31,7 @@ public class UserServiceImpl implements UserService {
     private boolean checkUsername(User user) throws Exception {
         Optional<User> userFound = userRepository.findByUsername(user.getUsername());
         if (userFound.isPresent()) {
+            
             throw new Exception("no disponible");
         }
         return true;
@@ -43,7 +45,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(User user) throws Exception {
+    public User createUser(User user) throws Exception {    
         if (checkUsername(user) && checkPasswordMatch(user)) {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         }
@@ -51,8 +53,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserById(Long id) throws Exception {
-        return userRepository.findById(id).orElseThrow(() -> new Exception("no existe"));
+    public User getUserById(Long id) throws IdorUsernameNotFound {
+        return userRepository.findById(id).orElseThrow(() -> new IdorUsernameNotFound("This user or id does not exist."));
 
     }
 
@@ -77,11 +79,15 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    public void deleteUser(Long id) throws Exception {
-        userRepository.delete(getUserById(id));
-    }
+    @PreAuthorize("hasRole('ADMIN')")
+	public void deleteUser(Long id) throws IdorUsernameNotFound {
 
+		User user = getUserById(id);
+		
+        userRepository.delete(user);
+	}
+
+    
     @Override
     public User changePassword(ChangePasswordForm form) throws Exception {
         User user = getUserById(form.getId());
@@ -106,7 +112,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public boolean isLoggedUserADMIN() {
-        return loggedUserHasRole("ROLE_ADMIN");
+        return loggedUserHasRole("ADMIN");
     }
 
     public boolean loggedUserHasRole(String role) {

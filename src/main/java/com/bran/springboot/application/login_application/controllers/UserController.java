@@ -2,7 +2,6 @@ package com.bran.springboot.application.login_application.controllers;
 
 import java.util.stream.Collectors;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,10 +16,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.bran.springboot.application.login_application.dto.ChangePasswordForm;
 import com.bran.springboot.application.login_application.entities.User;
+import com.bran.springboot.application.login_application.exception.IdorUsernameNotFound;
 import com.bran.springboot.application.login_application.repositories.RoleRepository;
 import com.bran.springboot.application.login_application.services.UserService;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -77,6 +76,7 @@ public class UserController {
 
     @GetMapping("/editUser/{id}")
     public String getEditUserForm(Model model, @PathVariable(name = "id") Long id) throws Exception {
+        
         User userToEdit = userService.getUserById(id);
 
         model.addAttribute("userForm", userToEdit);
@@ -138,7 +138,7 @@ public class UserController {
     public String deleteUser(Model model, @PathVariable(name = "id") Long id) {
         try {
             userService.deleteUser(id);
-        } catch (Exception e) {
+        } catch (IdorUsernameNotFound e) {
             model.addAttribute("listErrorMessage", e.getMessage());
         }
         
